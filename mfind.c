@@ -21,7 +21,7 @@
 #define MINPOP 20
 #define PERIOD 1
 
-#define MAX_FOUND 10000 // Increase if this value is too low
+#define MAX_FOUND 10000
 
 #define DIM ((2 * PERIOD) + MINPOP)
 
@@ -183,11 +183,11 @@ void rparse(int (* bconds)[], int (* sconds)[]) {
 				} else {
 					for (int nn = 0; nn < 13; nn++) {
 						if (birth) {
-							(*bconds)[(lastdigit * 13) + nn] = 0;
+							if ((*bconds)[(lastdigit * 13) + nn] == 2) (*bconds)[(lastdigit * 13) + nn] = 0;
 
 							if (nn == i) (*bconds)[(lastdigit * 13) + nn] = 1;
 						} else if (survival) {
-							(*sconds)[(lastdigit * 13) + nn] = 0;
+							if ((*sconds)[(lastdigit * 13) + nn] == 2) (*sconds)[(lastdigit * 13) + nn] = 0;
 
 							if (nn == i) (*sconds)[(lastdigit * 13) + nn] = 1;
 						}
@@ -234,7 +234,7 @@ void advance(int (* pattern)[DIM][DIM]) {
 }
 
 void print(int pattern[DIM][DIM]) {
-	printf("\033[1;32mFound an oscillator, %d so far.\033[0m\n", found);
+	printf("\033[1;32mFound an oscillator, %d so far.\033[0m\n", found + 1);
 
 	for (int y = 0; y < DIM; y++) {
 		for (int x = 0; x < DIM; x++) {
@@ -454,9 +454,58 @@ void trim(int (* pattern)[DIM][DIM]) {
 	}
 }
 
-int in_patternlist(int pattern[DIM][DIM]) {
+void rotate(int (* pattern)[DIM][DIM]) {
+	int rot[DIM][DIM] = {0};
+
+	copy(*pattern, &rot);
+	for (int y = 0; y < DIM; y++) {
+		for (int x = 0; x < DIM; x++) {
+			rot[DIM - x - 1][y] = (*pattern)[y][x];
+		}
+	}
+
+	for (int y = 0; y < DIM; y++) {
+		for (int x = 0; x < DIM; x++) {
+			(*pattern)[y][x] = rot[y][x];
+		}
+	}
+}
+
+void reflect(int (* pattern)[DIM][DIM]) {
+	int ref[DIM][DIM] = {0};
+
+	copy(*pattern, &ref);
+	for (int y = 0; y < DIM; y++) {
+		for (int x = 0; x < DIM; x++) {
+			ref[y][DIM - x - 1] = (*pattern)[y][x];
+		}
+	}
+
+	for (int y = 0; y < DIM; y++) {
+		for (int x = 0; x < DIM; x++) {
+			(*pattern)[y][x] = ref[y][x];
+		}
+	}
+}
+
+int in_patternlist(int (* pattern)[DIM][DIM]) {
+	int tr[DIM][DIM] = {0};
+
 	for (int n = 0; n < found; n++) {
-		if (equal(pattern, foundlist[n])) return 1;
+		for (int nn = 0; nn < 4; nn++) {
+			copy(*pattern, &tr);
+			trim(&tr);
+
+			if (equal(tr, foundlist[n])) return 1;
+			reflect(pattern);
+
+			copy(*pattern, &tr);
+			trim(&tr);
+
+			if (equal(tr, foundlist[n])) return 1;
+			reflect(pattern);
+			rotate(pattern);
+		}
 	}
 
 	return 0;
@@ -467,13 +516,18 @@ int double_verify(int (* pattern)[DIM][DIM]) {
 
 	int tr[DIM][DIM] = {0};
 
-	copy(*pattern, &tr);
 	if (getpop(*pattern) != MINPOP) return 0;
 
 	if (is_subperiodic(pattern)) return 0;
 
-	trim(&tr);
-	if (in_patternlist(tr)) return 0;
+	for (int n = 0; n < PERIOD; n++) {
+		copy(*pattern, &tr);
+		trim(&tr);
+
+		if (in_patternlist(&tr)) return 0;
+
+		advance(pattern);
+	}
 
 	print(*pattern);
 
