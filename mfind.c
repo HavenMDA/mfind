@@ -18,8 +18,10 @@
 
 #include <stdio.h>
 
-#define MINPOP 4
+#define MINPOP 20
 #define PERIOD 1
+
+#define MAX_FOUND 10000 // Increase if this value is too low
 
 #define DIM ((2 * PERIOD) + MINPOP)
 
@@ -38,6 +40,8 @@ int bconds[117] = {0};
 int sconds[117] = {0};
 
 int max_layers[DIAG_WIDTH] = {0};
+
+int foundlist[MAX_FOUND][DIM][DIM] = {0};
 
 FILE * results;
 
@@ -235,13 +239,13 @@ void print(int pattern[DIM][DIM]) {
 	for (int y = 0; y < DIM; y++) {
 		for (int x = 0; x < DIM; x++) {
 			if (pattern[y][x]) {
-				fprintf(results, "0");
+				fprintf(results, "o");
 
 			} else {
-				fprintf(results, ".");
+				fprintf(results, "b");
 			}
 		}
-		fprintf(results, "\n");
+		fprintf(results, "$\n");
 	}
 }
 
@@ -385,14 +389,95 @@ int is_subperiodic(int (* pattern)[DIM][DIM]) {
 	return 0;
 }
 
+void trim(int (* pattern)[DIM][DIM]) {
+	int minx = 0;
+	int maxx = 0;
+	int miny = 0;
+	int maxy = 0;
+
+	int next[DIM][DIM] = {0};
+
+	for (int y = 0; y < DIM; y++) {
+		for (int x = 0; x < DIM; x++) {
+			if ((*pattern)[y][x]) {
+				miny = y;
+				goto mny;
+			}
+		}
+	}
+
+	mny:;
+
+	for (int x = 0; x < DIM; x++) {
+		for (int y = 0; y < DIM; y++) {
+			if ((*pattern)[y][x]) {
+				minx = x;
+				goto mnx;
+			}
+		}
+	}
+
+	mnx:;
+
+	for (int y = (DIM - 1); y >= 0; y--) {
+		for (int x = (DIM - 1); x >= 0; x--) {
+			if ((*pattern)[y][x]) {
+				maxy = y + 1;
+				goto mxy;
+			}
+		}
+	}
+
+	mxy:;
+
+	for (int x = (DIM - 1); x >= 0; x--) {
+		for (int y = (DIM - 1); y >= 0; y--) {
+			if ((*pattern)[y][x]) {
+				maxx = x + 1;
+				goto mxx;
+			}
+		}
+	}
+
+	mxx:;
+
+	for (int y = miny; y < maxy; y++) {
+		for (int x = minx; x < maxx; x++) {
+			next[y - miny][x - minx] = (*pattern)[y][x];
+		}
+	}
+
+	for (int y = 0; y < DIM; y++) {
+		for (int x = 0; x < DIM; x++) {
+			(*pattern)[y][x] = next[y][x];
+		}
+	}
+}
+
+int in_patternlist(int pattern[DIM][DIM]) {
+	for (int n = 0; n < found; n++) {
+		if (equal(pattern, foundlist[n])) return 1;
+	}
+
+	return 0;
+}
+
 int double_verify(int (* pattern)[DIM][DIM]) {
 	// Placeholder, more tests coming soon
 
+	int tr[DIM][DIM] = {0};
+
+	copy(*pattern, &tr);
 	if (getpop(*pattern) != MINPOP) return 0;
 
 	if (is_subperiodic(pattern)) return 0;
 
+	trim(&tr);
+	if (in_patternlist(tr)) return 0;
+
 	print(*pattern);
+
+	copy(tr, &(foundlist[found]));
 
 	return 1;
 }
@@ -422,14 +507,14 @@ void write_to_rule(char rs[], char (* rule)[]) {
 }
 
 int main(void) {
-	results = fopen("/home/mamaral/Documents/results.txt", "w");
+	results = fopen("/path/to/your/results/file", "w");
 
 	build_max_layers(&max_layers);
 
 	char rs[] = "B3/S23";
 	write_to_rule(rs, &rule);
 
-	fprintf(results, "#R %s\n", rule);
+	fprintf(results, "x = 0, y = 0, rule = %s\n", rule);
 
 	rparse(&bconds, &sconds);
 
