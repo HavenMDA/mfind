@@ -18,8 +18,8 @@
 
 #include <stdio.h>
 
-#define MINPOP 12
-#define PERIOD 3
+#define MINPOP 20
+#define PERIOD 1
 
 #define MAX_FOUND 10000
 
@@ -236,7 +236,7 @@ void print(int pattern[DIM]) {
 
 	for (int y = 0; y < DIM; y++) {
 		for (int x = 0; x < DIM; x++) {
-			if ((pattern[y] << x) & 1) {
+			if ((pattern[y] >> x) & 1) {
 				fprintf(results, "o");
 			} else {
 				fprintf(results, "b");
@@ -444,7 +444,6 @@ void trim(int (* pattern)[DIM]) {
 void rotate(int (* pattern)[DIM]) {
 	int rot[DIM] = {0};
 
-	copy(*pattern, &rot);
 	for (int y = 0; y < DIM; y++) {
 		for (int x = 0; x < DIM; x++) {
 			rot[DIM - x - 1] |= (((*pattern)[y] >> x) & 1) << y;
@@ -459,7 +458,6 @@ void rotate(int (* pattern)[DIM]) {
 void reflect(int (* pattern)[DIM]) {
 	int ref[DIM] = {0};
 
-	copy(*pattern, &ref);
 	for (int y = 0; y < DIM; y++) {
 		for (int x = 0; x < DIM; x++) {
 			ref[y] |= (((*pattern)[y] >> x) & 1) << (DIM - x - 1);
