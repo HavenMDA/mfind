@@ -545,7 +545,7 @@ void write_to_rule(char rs[], char (* rule)[]) {
 }
 
 int main(void) {
-	results = fopen("/home/mamaral/Documents/results.txt", "w");
+	results = fopen("/path/to/your/results/file", "w");
 
 	build_max_layers(&max_layers);
 
