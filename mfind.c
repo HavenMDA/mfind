@@ -634,7 +634,7 @@ int main(int argc, char * argv[]) {
 		pattern[n] = 0;
 	}
 
-	results = fopen("/home/mamaral/Documents/results.txt", "w");
+	results = fopen("/path/to/your/results/file", "w");
 
 	build_max_layers(&max_layers, MINPOP, PERIOD);
 	write_to_rule(rs, &rule);
