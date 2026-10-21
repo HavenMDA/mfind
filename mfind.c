@@ -33,7 +33,7 @@ int sconds[117] = {0};
 
 FILE * results;
 
-void build_max_layers(int (* max_layers)[], int MINPOP, int PERIOD) {
+void build_max_layers(unsigned long long (* max_layers)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -46,7 +46,7 @@ void build_max_layers(int (* max_layers)[], int MINPOP, int PERIOD) {
 	}
 }
 
-void layers_to_pattern(int layers[], int (* pattern)[], int MINPOP, int PERIOD) {
+void layers_to_pattern(unsigned long long layers[], unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -73,7 +73,7 @@ void layers_to_pattern(int layers[], int (* pattern)[], int MINPOP, int PERIOD) 
 	}
 }
 
-void pattern_to_layers(int pattern[], int (* layers)[], int MINPOP, int PERIOD) {
+void pattern_to_layers(unsigned long long pattern[], unsigned long long (* layers)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -198,14 +198,15 @@ void rparse(int (* bconds)[], int (* sconds)[]) {
 	}
 }
 
-void advance(int (* pattern)[], int MINPOP, int PERIOD) {
+void advance(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
 	int dict[256] = {0, 13, 14, 29, 13, 26, 29, 43, 14, 29, 27, 42, 28, 44, 47, 55, 14, 28, 27, 47, 29, 44, 42, 55, 30, 48, 40, 61, 48, 56, 61, 69, 13, 26, 28, 44, 31, 39, 46, 57, 29, 43, 47, 55, 46, 57, 63, 68, 28, 45, 41, 54, 46, 58, 59, 73, 48, 62, 60, 70, 64, 74, 72, 81, 14, 28, 30, 48, 28, 45, 48, 62, 27, 47, 40, 61, 41, 54, 60, 70, 27, 41, 40, 60, 47, 54, 61, 70, 40, 60, 53, 65, 60, 71, 65, 78, 29, 44, 48, 56, 46, 58, 64, 74, 42, 55, 61, 69, 59, 73, 72, 81, 47, 54, 60, 71, 63, 67, 72, 80, 61, 70, 65, 78, 72, 80, 83, 91, 13, 31, 28, 46, 26, 39, 44, 57, 28, 46, 41, 59, 45, 58, 54, 73, 29, 46, 47, 63, 43, 57, 55, 68, 48, 64, 60, 72, 62, 74, 70, 81, 26, 39, 45, 58, 39, 52, 58, 66, 44, 57, 54, 73, 58, 66, 67, 79, 44, 58, 54, 67, 57, 66, 73, 79, 56, 74, 71, 80, 74, 82, 80, 92, 29, 46, 48, 64, 44, 58, 56, 74, 47, 63, 60, 72, 54, 67, 71, 80, 42, 59, 61, 72, 55, 73, 69, 81, 61, 72, 65, 83, 70, 80, 78, 91, 43, 57, 62, 74, 57, 66, 74, 82, 55, 68, 70, 81, 73, 79, 80, 92, 55, 73, 70, 80, 68, 79, 81, 92, 69, 81, 78, 91, 81, 92, 91, 104};
 
 	int neigh[8][2] = {{1, 1}, {1, 0}, {1, -1}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
-	int next[DIM];
+
+	unsigned long long next[DIM];
 
 	for (int y = 0; y < DIM; y++) {
 		next[y] = 0;
@@ -231,7 +232,7 @@ void advance(int (* pattern)[], int MINPOP, int PERIOD) {
 	}
 }
 
-void print(int pattern[], int MINPOP, int PERIOD) {
+void print(unsigned long long pattern[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -249,18 +250,18 @@ void print(int pattern[], int MINPOP, int PERIOD) {
 	}
 }
 
-void print_layers(int layers[], int MINPOP, int PERIOD) {
+void print_layers(unsigned long long layers[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
 	for (int n = 0; n < DIAG_WIDTH; n++) {
-		printf("%d ", layers[n]);
+		printf("%lld ", layers[n]);
 	}
 
 	printf("\n");
 }
 
-void copy(int source[], int (* target)[], int MINPOP, int PERIOD) {
+void copy(unsigned long long source[], unsigned long long (* target)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -269,7 +270,7 @@ void copy(int source[], int (* target)[], int MINPOP, int PERIOD) {
 	}
 }
 
-int equal(int pattern1[], int pattern2[], int MINPOP, int PERIOD) {
+int equal(unsigned long long pattern1[], unsigned long long pattern2[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -280,7 +281,7 @@ int equal(int pattern1[], int pattern2[], int MINPOP, int PERIOD) {
 	return 1;
 }
 
-int compare(int l1[], int l2[], int MINPOP, int PERIOD) {
+int compare(unsigned long long l1[], unsigned long long l2[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -293,7 +294,7 @@ int compare(int l1[], int l2[], int MINPOP, int PERIOD) {
 	return 1;
 }
 
-int countzeroes(int layers[]) {
+int countzeroes(unsigned long long layers[]) {
 	int record = 0;
 	int current = 0;
 
@@ -310,7 +311,7 @@ int countzeroes(int layers[]) {
 	return record;
 }
 
-int getpop(int pattern[], int MINPOP, int PERIOD) {
+int getpop(unsigned long long pattern[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -325,7 +326,7 @@ int getpop(int pattern[], int MINPOP, int PERIOD) {
 	return pop;
 }
 
-int getminpop(int (* pattern)[], int MINPOP, int PERIOD) {
+int getminpop(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int pop = getpop(*pattern, MINPOP, PERIOD);
 
 	for (int n = 0; n < PERIOD; n++) {
@@ -337,11 +338,11 @@ int getminpop(int (* pattern)[], int MINPOP, int PERIOD) {
 	return pop;
 }
 
-int verify(int (* pattern)[], int MINPOP, int PERIOD) {
+int verify(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
-	int orig[DIM];
+	unsigned long long orig[DIM];
 
 	copy(*pattern, &orig, MINPOP, PERIOD);
 	for (int n = 0; n < PERIOD; n++) {
@@ -349,8 +350,8 @@ int verify(int (* pattern)[], int MINPOP, int PERIOD) {
 	}
 
 	if (!(equal(orig, *pattern, MINPOP, PERIOD))) {
-		int l1[DIAG_WIDTH];
-		int l2[DIAG_WIDTH];
+		unsigned long long l1[DIAG_WIDTH];
+		unsigned long long l2[DIAG_WIDTH];
 
 		pattern_to_layers(orig, &l1, MINPOP, PERIOD);
 		pattern_to_layers(*pattern, &l2, MINPOP, PERIOD);
@@ -374,13 +375,13 @@ int verify(int (* pattern)[], int MINPOP, int PERIOD) {
 	return 2;
 }
 
-int is_subperiodic(int (* pattern)[], int MINPOP, int PERIOD) {
+int is_subperiodic(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
 	if (PERIOD < 2) return 0;
 
-	int orig[DIM];
+	unsigned long long orig[DIM];
 
 	copy(*pattern, &orig, MINPOP, PERIOD);
 	advance(pattern, MINPOP, PERIOD);
@@ -400,7 +401,7 @@ int is_subperiodic(int (* pattern)[], int MINPOP, int PERIOD) {
 	return 0;
 }
 
-void trim(int (* pattern)[], int MINPOP, int PERIOD) {
+void trim(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -409,7 +410,7 @@ void trim(int (* pattern)[], int MINPOP, int PERIOD) {
 	int miny = 0;
 	int maxy = 0;
 
-	int next[DIM];
+	unsigned long long next[DIM];
 
 	for (int y = 0; y < DIM; y++) {
 		next[y] = 0;
@@ -470,11 +471,11 @@ void trim(int (* pattern)[], int MINPOP, int PERIOD) {
 	}
 }
 
-void rotate(int (* pattern)[], int MINPOP, int PERIOD) {
+void rotate(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
-	int rot[DIM];
+	unsigned long long rot[DIM];
 
 	for (int y = 0; y < DIM; y++) rot[y] = 0;
 
@@ -489,11 +490,11 @@ void rotate(int (* pattern)[], int MINPOP, int PERIOD) {
 	}
 }
 
-void reflect(int (* pattern)[], int MINPOP, int PERIOD) {
+void reflect(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
-	int ref[DIM];
+	unsigned long long ref[DIM];
 
 	for (int y = 0; y < DIM; y++) ref[y] = 0;
 
@@ -508,12 +509,12 @@ void reflect(int (* pattern)[], int MINPOP, int PERIOD) {
 	}
 }
 
-int in_patternlist(int (* pattern)[], int MINPOP, int PERIOD, int foundlist[MAX_FOUND][(2 * PERIOD) + MINPOP]) {
+int in_patternlist(unsigned long long (* pattern)[], int MINPOP, int PERIOD, unsigned long long foundlist[MAX_FOUND][(2 * PERIOD) + MINPOP]) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
 	int r = 0;
-	int tr[DIM];
+	unsigned long long tr[DIM];
 
 	for (int n = 0; n < found; n++) {
 		for (int nn = 0; nn < 4; nn++) {
@@ -535,7 +536,7 @@ int in_patternlist(int (* pattern)[], int MINPOP, int PERIOD, int foundlist[MAX_
 	return r;
 }
 
-int double_verify(int (* pattern)[], int MINPOP, int PERIOD, int foundlist[MAX_FOUND][(2 * PERIOD) + MINPOP]) {
+int double_verify(unsigned long long (* pattern)[], int MINPOP, int PERIOD, unsigned long long foundlist[MAX_FOUND][(2 * PERIOD) + MINPOP]) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -545,7 +546,7 @@ int double_verify(int (* pattern)[], int MINPOP, int PERIOD, int foundlist[MAX_F
 
 	if (is_subperiodic(pattern, MINPOP, PERIOD)) return 0;
 
-	int tr[DIM];
+	unsigned long long tr[DIM];
 
 	copy(*pattern, &tr, MINPOP, PERIOD);
 	trim(&tr, MINPOP, PERIOD);
@@ -561,7 +562,7 @@ int double_verify(int (* pattern)[], int MINPOP, int PERIOD, int foundlist[MAX_F
 	return 1;
 }
 
-void increment(int (* layers)[], int * depth, int MINPOP, int PERIOD, int max_layers[(2 * MINPOP) - 1]) {
+void increment(unsigned long long (* layers)[], int * depth, int MINPOP, int PERIOD, unsigned long long max_layers[(2 * MINPOP) - 1]) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
@@ -620,11 +621,11 @@ int main(int argc, char * argv[]) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
-	int layers[DIAG_WIDTH];
-	int pattern[DIM];
+	unsigned long long layers[DIAG_WIDTH];
+	unsigned long long pattern[DIM];
 
-	int max_layers[DIAG_WIDTH];
-	int foundlist[MAX_FOUND][DIM];
+	unsigned long long max_layers[DIAG_WIDTH];
+	unsigned long long foundlist[MAX_FOUND][DIM];
 
 	for (int n = 0; n < DIAG_WIDTH; n++) {
 		layers[n] = 0;
