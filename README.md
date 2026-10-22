@@ -155,7 +155,7 @@ rather than
 
 `0 0 0 0 2`
 
-This is because the equivalent grid for `0 0 0 0 2` would have a living cell in its padding area.
+This is because the equivalent grid for `0 0 0 0 2` would have a living cell in its padding area, which should always remain dead.
 
 Once all possible branches have been exhausted, mfind returns, outputting the number of results it has found in that search.
 
