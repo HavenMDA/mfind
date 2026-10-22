@@ -53,8 +53,10 @@ To run mfind, enter mfind’s directory (if you have left it) and run
 
 The output should be
 
-`Usage: ./mfind <rule> <minpop> <period>`
-`       ./mfind <minpop> <period>`
+```
+Usage: ./mfind <rule> <minpop> <period>
+       ./mfind <minpop> <period>
+```
 
 ### Conway’s Game of Life
 
@@ -74,14 +76,16 @@ and find the text file you defined in **Precompilation**.
 
 Upon opening the file, you should see:
 
-`x = 0, y = 0, rule = B3/S23
-`bbbbbbb$`
-`bbbbbbb$`
-`bbbbbbb$`
-`bbbbbbb$`
-`bbooobb$`
-`bbbbbbb$`
-`bbbbbbb$`
+```
+x = 0, y = 0, rule = B3/S23
+bbbbbbb$
+bbbbbbb$
+bbbbbbb$
+bbbbbbb$
+bbooobb$
+bbbbbbb$
+bbbbbbb$
+```
 
 which is the RLE (Run Length Encoding) of a blinker.
 
@@ -113,21 +117,25 @@ mfind treats oscillators as two-dimensional grids of cells, with a diagonal slic
 
 For example, an `m = 3, p = 2` search would look like this:
 
-`P P P P P P P`
-`P P P P P P P`
-`P P   0 0 P P`
-`P P     0 P P`
-`P P       P P`
-`P P P P P P P`
-`P P P P P P P`
+```
+P P P P P P P
+P P P P P P P
+P P   0 0 P P
+P P     0 P P
+P P       P P
+P P P P P P P
+P P P P P P P
+```
 
 The `P` cells are dead padding cells, the ` ` cells are variable cells, and the `0` cells represent unused areas of the grid.
 
 The program searches by dividing the variable area into diagonal strips that go from the bottom-left to the top-right. As a diagram:
 
-`1`
-`2 3`
-`3 4 5`
+```
+1
+2 3
+3 4 5
+```
 
 The numbers used represent the layers. The two `3` cells are a single layer.
 
@@ -153,20 +161,24 @@ Once all possible branches have been exhausted, mfind returns, outputting the nu
 
 Though this enumeration style is exhaustive for most rules, it can occasionally skip oscillators in other rules. For example, in “Just Friends” (B2-a/S12), the following 8-cell period-2 oscillator gets skipped because it cannot fit in the current search space:
 
-` 0   `
-` 0 00`
-`  A  `
-`  A  `
-`00 0 `
-`   0 `
+```
+ 0   
+ 0 00
+  A  
+  A  
+00 0 
+   0
+```
 
 Search space (excluding padding):
 
-` 0000000`
-`  000000`
-`   00000`
-`    0000`
-`     000`
-`      00`
-`       0`
-`       `
+```
+ 0000000
+  000000
+   00000
+    0000
+     000
+      00
+       0
+
+```
