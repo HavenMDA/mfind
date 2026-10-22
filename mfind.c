@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "pseudo.h"
+
 #define MAX_FOUND 10000
 
 int testing = 0;
@@ -298,7 +300,11 @@ int countzeroes(unsigned long long layers[]) {
 	int record = 0;
 	int current = 0;
 
-	for (int n = 0; n <= depth; n++) {
+	int n = 0;
+
+	while (layers[n] == 0) n++;
+
+	for (; n <= depth; n++) {
 		if (layers[n] == 0) {
 			if (current == record) record++;
 
@@ -309,6 +315,14 @@ int countzeroes(unsigned long long layers[]) {
 	}
 
 	return record;
+}
+
+int countleadingzeroes(unsigned long long layers[]) {
+	int n = 0;
+
+	while ((layers[n] == 0) && (n <= depth)) n++;
+
+	return n;
 }
 
 int getpop(unsigned long long pattern[], int MINPOP, int PERIOD) {
@@ -349,7 +363,7 @@ int verify(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 		advance(pattern, MINPOP, PERIOD);
 	}
 
-	if (!(equal(orig, *pattern, MINPOP, PERIOD))) {
+	if (!(equal(orig, *pattern, MINPOP, PERIOD))) { // We do not have a complete oscillator
 		unsigned long long l1[DIAG_WIDTH];
 		unsigned long long l2[DIAG_WIDTH];
 
@@ -360,19 +374,21 @@ int verify(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 			(*pattern)[y] = orig[y]; // Reset pattern after advancing it PERIOD generations
 		}
 
-		if (compare(l1, l2, MINPOP, PERIOD)) return 1;
-		else return 0;
+		if (compare(l1, l2, MINPOP, PERIOD)) return 1; // Partial
+		else return 0; // Not a partial
 	}
 
 	for (int y = 0; y < DIM; y++) {
 		(*pattern)[y] = orig[y]; // Reset pattern after advancing it PERIOD generations
 	}
 
+	// We have a complete oscillator
+
 	if (getpop(*pattern, MINPOP, PERIOD) != getminpop(pattern, MINPOP, PERIOD)) {
-		return 1;
+		return 2;
 	}
 
-	return 2;
+	return 3;
 }
 
 int is_subperiodic(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
@@ -509,6 +525,21 @@ void reflect(unsigned long long (* pattern)[], int MINPOP, int PERIOD) {
 	}
 }
 
+int is_pseudo(unsigned long long (* pattern)[], int MINPOP, int PERIOD, int pbconds[]) {
+	int DIM = (2 * PERIOD) + MINPOP;
+	int DIAG_WIDTH = (2 * MINPOP) - 1;
+
+	int r = 1;
+
+	for (int n = 0; n < PERIOD; n++) {
+		if (fill_check(*pattern, MINPOP, PERIOD, pbconds)) r = 0;
+
+		advance(pattern, MINPOP, PERIOD);
+	}
+
+	return r;
+}
+
 int in_patternlist(unsigned long long (* pattern)[], int MINPOP, int PERIOD, unsigned long long foundlist[MAX_FOUND][(2 * PERIOD) + MINPOP]) {
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
@@ -540,26 +571,29 @@ int double_verify(unsigned long long (* pattern)[], int MINPOP, int PERIOD, unsi
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
-	// Placeholder, more tests coming soon
+	if (is_pseudo(pattern, MINPOP, PERIOD, bconds)) return 0;
 
 	if (getpop(*pattern, MINPOP, PERIOD) != MINPOP) return 0;
 
 	if (is_subperiodic(pattern, MINPOP, PERIOD)) return 0;
 
+	int r = 1;
 	unsigned long long tr[DIM];
 
 	copy(*pattern, &tr, MINPOP, PERIOD);
 	trim(&tr, MINPOP, PERIOD);
 	for (int n = 0; n < PERIOD; n++) {
-		if (in_patternlist(pattern, MINPOP, PERIOD, foundlist)) return 0;
+		if (in_patternlist(pattern, MINPOP, PERIOD, foundlist)) r = 0;
 
 		advance(pattern, MINPOP, PERIOD);
 	}
 
-	print(*pattern, MINPOP, PERIOD);
-	copy(tr, &(foundlist[found]), MINPOP, PERIOD);
+	if (r) {
+		print(*pattern, MINPOP, PERIOD);
+		copy(tr, &(foundlist[found]), MINPOP, PERIOD);
+	}
 
-	return 1;
+	return r;
 }
 
 void increment(unsigned long long (* layers)[], int * depth, int MINPOP, int PERIOD, unsigned long long max_layers[(2 * MINPOP) - 1]) {
@@ -613,8 +647,8 @@ int main(int argc, char * argv[]) {
 		MINPOP = atoi(argv[2]);
 		PERIOD = atoi(argv[3]);
 	} else {
-		printf("Usage: ./mfind <rule> <minpop> <period>\n");
-		printf("       ./mfind <minpop> <period>\n");
+		printf("Usage: mfind <rule> <minpop> <period>\n");
+		printf("       mfind        <minpop> <period>\n");
 		return 0;
 	}
 
@@ -643,11 +677,10 @@ int main(int argc, char * argv[]) {
 	fprintf(results, "x = 0, y = 0, rule = %s\n", rule);
 
 	rparse(&bconds, &sconds);
-
 	while (1) {
 		layers_to_pattern(layers, &pattern, MINPOP, PERIOD);
 
-		while ((getpop(pattern, MINPOP, PERIOD) > MINPOP) || (countzeroes(layers) > (2 * PERIOD))) {
+		while ((getpop(pattern, MINPOP, PERIOD) > MINPOP) || (countzeroes(layers) > (2 * PERIOD)) || (countleadingzeroes(layers) >= MINPOP)) {
 			increment(&layers, &depth, MINPOP, PERIOD, max_layers);
 			layers_to_pattern(layers, &pattern, MINPOP, PERIOD);
 
@@ -676,7 +709,7 @@ int main(int argc, char * argv[]) {
 				}
 			}
 
-			if (status == 2) {
+			if (status == 3) {
 				if (double_verify(&pattern, MINPOP, PERIOD, foundlist)) {
 					found++;
 				}
