@@ -613,8 +613,8 @@ int main(int argc, char * argv[]) {
 		MINPOP = atoi(argv[2]);
 		PERIOD = atoi(argv[3]);
 	} else {
-		printf("Usage: mfind <rule> <minpop> <period>\n");
-		printf("       mfind <minpop> <period>\n");
+		printf("Usage: ./mfind <rule> <minpop> <period>\n");
+		printf("       ./mfind <minpop> <period>\n");
 		return 0;
 	}
 
