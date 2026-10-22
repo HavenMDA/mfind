@@ -175,12 +175,12 @@ Though this enumeration style is exhaustive for most rules, it can occasionally 
 Search space (excluding padding):
 
 ```
- 0000000
-  000000
-   00000
-    0000
-     000
-      00
-       0
-
+  0 0 0 0 0 0 0
+    0 0 0 0 0 0
+      0 0 0 0 0
+        0 0 0 0
+          0 0 0
+            0 0
+              0
+               
 ```
