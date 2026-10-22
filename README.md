@@ -1,3 +1,5 @@
+# mfind
+
 Welcome to mfind!
 
 This document is mfind’s user manual. It explains how to compile and run mfind, how to find oscillators, mfind’s history, and how it works.
