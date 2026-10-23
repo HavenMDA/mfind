@@ -257,7 +257,7 @@ void print_layers(unsigned long long layers[], int MINPOP, int PERIOD) {
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
 
 	for (int n = 0; n < DIAG_WIDTH; n++) {
-		printf("%lld ", layers[n]);
+		printf("%4lld", layers[n]);
 	}
 
 	printf("\n");
@@ -625,11 +625,19 @@ int main(int argc, char * argv[]) {
 	int MINPOP;
 	int PERIOD;
 
+	int dividing;
+
 	char rs[274] = "B3/S23";
 
 	if (argc == 3) {
 		MINPOP = atoi(argv[1]);
 		PERIOD = atoi(argv[2]);
+
+		if ((MINPOP <= 0) || (PERIOD <= 0)) {
+			printf("Invalid input: ./mfind %d %d\n", MINPOP, PERIOD);
+			printf("               minpop and period must be greater than zero.\n");
+			return 1;
+		}
 	} else if (argc == 4) {
 		int n = 0;
 		while (argv[1][n]) {
@@ -649,6 +657,8 @@ int main(int argc, char * argv[]) {
 		printf("       mfind        <minpop> <period>\n");
 		return 0;
 	}
+
+	dividing = (MINPOP > 3) ? 1 : 0;
 
 	int DIM = (2 * PERIOD) + MINPOP;
 	int DIAG_WIDTH = (2 * MINPOP) - 1;
@@ -675,6 +685,21 @@ int main(int argc, char * argv[]) {
 	fprintf(results, "x = 0, y = 0, rule = %s\n", rule);
 
 	rparse(&bconds, &sconds);
+
+	if (bconds[0]) {
+		printf("Invalid input: ./mfind %s %d %d\n", rule, MINPOP, PERIOD);
+		printf("               Rule must not contain B0.\n");
+		return 1;
+	}
+
+	if (DIM > 64) {
+		printf("Invalid search: ./mfind %s %d %d\n", rule, MINPOP, PERIOD);
+		printf("                Search too big!\n");
+		return 1;
+	}
+
+	if (dividing) printf("\033[1;36mStarting branch 0...\033[0m\n");
+
 	while (1) {
 		layers_to_pattern(layers, &pattern, MINPOP, PERIOD);
 
@@ -687,6 +712,11 @@ int main(int argc, char * argv[]) {
 
 				fclose(results);
 				return 0;
+			}
+
+			if ((depth <= 3) && dividing) {
+				unsigned long long l = (layers[0] * 32) + (layers[1] * 16) + (layers[2] * 4) + layers[3];
+				printf("\033[1;36mFinished branch %2lld. Starting branch %2lld...\033[0m\n", l - 1, l);
 			}
 		}
 
@@ -705,6 +735,11 @@ int main(int argc, char * argv[]) {
 					fclose(results);
 					return 0;
 				}
+
+				if ((depth <= 3) && dividing) {
+					unsigned long long l = (layers[0] * 32) + (layers[1] * 16) + (layers[2] * 4) + layers[3];
+					printf("\033[1;36mFinished branch %2lld. Starting branch %2lld...\033[0m\n", l - 1, l);
+				}
 			}
 
 			if (status == 3) {
@@ -721,6 +756,11 @@ int main(int argc, char * argv[]) {
 
 				fclose(results);
 				return 0;
+			}
+
+			if ((depth <= 3) && dividing) {
+				unsigned long long l = (layers[0] * 32) + (layers[1] * 16) + (layers[2] * 4) + layers[3];
+				printf("\033[1;36mFinished branch %2lld. Starting branch %2lld...\033[0m\n", l - 1, l);
 			}
 		}
 	}
