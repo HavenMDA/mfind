@@ -332,9 +332,7 @@ int getpop(unsigned long long pattern[], int MINPOP, int PERIOD) {
 	int pop = 0;
 
 	for (int y = 0; y < DIM; y++) {
-		for (int x = 0; x < DIM; x++) {
-			if ((pattern[y] >> x) & 1) pop++;
-		}
+		pop += __builtin_popcountll(pattern[y]);
 	}
 
 	return pop;
