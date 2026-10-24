@@ -703,7 +703,7 @@ int main(int argc, char * argv[]) {
 	while (1) {
 		layers_to_pattern(layers, &pattern, MINPOP, PERIOD);
 
-		while ((getpop(pattern, MINPOP, PERIOD) > MINPOP) || (countzeroes(layers) > (2 * PERIOD)) || (countleadingzeroes(layers) >= (MINPOP / 2))) {
+		while ((getpop(pattern, MINPOP, PERIOD) > MINPOP) || (countzeroes(layers) > (2 * PERIOD)) || (countleadingzeroes(layers) > (MINPOP / 2))) {
 			increment(&layers, &depth, MINPOP, PERIOD, max_layers);
 			layers_to_pattern(layers, &pattern, MINPOP, PERIOD);
 
